@@ -1,0 +1,23 @@
+<html lang="en">
+
+<head><title>测试html 请直接使用chrome打开</title></head>
+
+
+<body>
+<div style="height: 70%;width:100%" id="header123456"></div>
+<button onclick='clicktest()'>content js inject js 测试按钮(无法调用到content js中的方法)</button>
+<button onclick='injectJsClick()'>dom js inject js 测试按钮(inject 会重写dom js)</button>
+</body>
+
+<script>
+    function clicktest() {
+        injectJsClick();
+        contentJsClick();
+    }
+
+    function injectJsClick() {
+        alert("dom click");
+    }
+</script>
+</html>
+

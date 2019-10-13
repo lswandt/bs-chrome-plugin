@@ -21,6 +21,58 @@ $('#notification').on('click',function () {
     });
 })
 
+//图片过滤
+// $('#interceptorImgs').on('click',function () {
+//     chrome.storage.sync.get(['switchImgInterceptor'],function(items) {
+//         var switchImgInterceptor = items.switchImgInterceptor;
+//         chrome.storage.sync.set({switchImgInterceptor:!switchImgInterceptor}, function() {
+//             alertSwitch(!switchImgInterceptor);
+//         });
+//     });
+// })
+
+$('#interceptorImgs').on('click',function () {
+    var bg = chrome.extension.getBackgroundPage();
+    bg.switchImgInterceptor = !bg.switchImgInterceptor;
+    alertSwitch(bg.switchImgInterceptor);
+})
+
+$('#interceptorMedia').on('click',function () {
+    var bg = chrome.extension.getBackgroundPage();
+    bg.musicInterceptor = !bg.musicInterceptor;
+    alertSwitch(bg.musicInterceptor);
+})
+
+$('#cookieTest').on('click',function () {
+    var bg = chrome.extension.getBackgroundPage();
+    bg.cookieSwitch = !bg.cookieSwitch;
+    alertSwitch(bg.cookieSwitch);
+})
+
+function alertSwitch(flag){
+    var message = flag?"开启":"关闭";
+    alert("开关~"+message);
+}
+
+//开关标记
+$('#switchBadge').on('click',function () {
+    var switchTmpv = false;
+    chrome.storage.sync.get(['switchTmp'],function(items) {
+        switchTmpv = items.switchTmp;
+        if(switchTmpv){
+            //设置 图标的badge(标记)
+            chrome.browserAction.setBadgeText({text: 'new'});
+            chrome.browserAction.setBadgeBackgroundColor({color: [255, 0, 0, 255]});
+        }else{
+            //设置 图标的badge(标记)
+            chrome.browserAction.setBadgeText({text: ''});
+            chrome.browserAction.setBadgeBackgroundColor({color: [0, 0, 0, 0]});
+        }
+        chrome.storage.sync.set({switchTmp:!switchTmpv}, function() {
+        });
+    });
+})
+
 $('#addNotice').on('click',function () {
     setTimeout(function (){
         chrome.notifications.create(null, {
@@ -129,7 +181,7 @@ $('#storageTestInsert').on('click',function () {
 })
 
 $('#storageTestQuery').on('click',function () {
-    chrome.storage.sync.get({date:'sj' }, function(items) {
+    chrome.storage.sync.get(function(items) {
         alert(items.date);
     });
 })

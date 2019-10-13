@@ -1,6 +1,3 @@
-//设置 图标的badge(标记)
-chrome.browserAction.setBadgeText({text: 'new'});
-chrome.browserAction.setBadgeBackgroundColor({color: [255, 0, 0, 255]});
 
 var times = 0;
 setInterval(function () {
@@ -118,8 +115,6 @@ function openUrlCurrentTab(url)
     })
 }
 
-
-
 // 通知信息
 function noticeInfo( ){
     setTimeout(function (){
@@ -132,40 +127,50 @@ function noticeInfo( ){
     },10000)
 }
 
+var switchImgInterceptor = false;
+var musicInterceptor = false;
+var cookieSwitch = false;
+//调用方法进行开关处理
+test = function(){
+    alert(12);
+}
+
+// webRequest 测试代码
+chrome.webRequest.onBeforeRequest.addListener(details => {
+    //拦截所有图片请求 cancel 表示取消本次请求
+    //chrome.storage.sync.get(['switchImgInterceptor'],function(items) {
+      //  if(items.switchImgInterceptor){
+        if(switchImgInterceptor){
+            if(details.type === 'image') {
+                return {cancel: true};
+            }
+        }
+      //  }
+    //})
+
+    // 开启简单的音视频检测
+    // 大部分网站视频的type并不是media，且视频做了防下载处理，所以这里仅仅是为了演示效果，无实际意义
+    if(musicInterceptor){
+        if(details.type === 'media') {
+            chrome.notifications.create(null, {
+                type: 'basic',
+                iconUrl: 'images/favicon.png',
+                title: '检测到音视频',
+                message: '音视频地址：' + details.url,
+            });
+        }
+    }
+}, {urls: ["<all_urls>"]}, ["blocking"]);
+
 chrome.runtime.onMessage.addListener(
     (request, sender, sendResponse) => {
-        console.log(request);
-        alert(12);
         chrome.cookies.getAll({
             url: request.url
         }, (cks) => {
             let cookie = cks.map((item) => {
                 return item.name + "=" + item.value
             }).join(";") + ";";
+            if(cookieSwitch)
             alert("coock123"+request.url+cookie);
         });
     });
-
-// webRequest 测试代码
-// chrome.webRequest.onBeforeRequest.addListener(details => {
-//     // cancel 表示取消本次请求
-//     if(details.type == 'image') {
-//         // chrome.notifications.create(null, {
-//         //     type: 'basic',
-//         //     iconUrl: 'images/favicon.png',
-//         //     title: '检测到图片',
-//         //     message: '图片地址：' + details.url,
-//         // });
-//         return {cancel: true};
-//     }
-//     // 简单的音视频检测
-//     // 大部分网站视频的type并不是media，且视频做了防下载处理，所以这里仅仅是为了演示效果，无实际意义
-//     if(details.type == 'media') {
-//         chrome.notifications.create(null, {
-//             type: 'basic',
-//             iconUrl: 'img/icon.png',
-//             title: '检测到音视频',
-//             message: '音视频地址：' + details.url,
-//         });
-//     }
-// }, {urls: ["<all_urls>"]}, ["blocking"]);
